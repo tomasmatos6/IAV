@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEditor.PlayerSettings;
 
 public class Chunk
 {
     public Block[,,] chunkdata;
     public GameObject goChunk;
-    public enum ChunkStatus { DRAW, DONE, INVIS };
+    public enum ChunkStatus { INIT, DRAW, DONE, INVIS };
     public ChunkStatus status;
     Material material;
     float xOffset;
@@ -19,6 +20,7 @@ public class Chunk
         this.material = material;
         this.xOffset = xOffset;
         this.zOffset = zOffset;
+        status = ChunkStatus.INIT;
         BuildChunk();
     }
 
@@ -121,6 +123,11 @@ public class Chunk
                     else if (worldY == h)
                     {
                         chunkdata[x, y, z] = new Block(Block.BlockType.GRASS, pos, this, material);
+                        if(Random.Range(0f, 5f) > 4.9f)
+                        {
+                            SpawnTree(pos, (int)Random.Range(7f, 10f));
+                            
+                        }
                     }
                     //Camada TERRA
                     else if (worldY < h)
@@ -130,10 +137,23 @@ public class Chunk
                     //Camada Ar
                     else
                     {
-                        chunkdata[x, y, z] = new Block(Block.BlockType.AIR, pos, this, material);
+                        if(chunkdata[x, y, z] == null)
+                            chunkdata[x, y, z] = new Block(Block.BlockType.AIR, pos, this, material);
                     }
                 }
             }
+        }
+    }
+
+    public void SpawnTree(Vector3 pos, int altura)
+    {
+        Vector3 newPos = pos;
+        
+        if(++newPos.y < altura)
+        {
+            
+            chunkdata[(int)newPos.x, (int)newPos.y, (int)newPos.z] = new Block(Block.BlockType.WOOD, newPos, this, material);
+            SpawnTree(newPos, altura);
         }
     }
 

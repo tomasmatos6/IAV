@@ -5,7 +5,7 @@ using UnityEngine;
 public class Block
 {
     enum Cubeside { BOTTOM, TOP, LEFT, RIGHT, FRONT, BACK };
-    public enum BlockType { GRASS, DIRT, STONE, TNT, AIR, IRON, COAL, DIAMOND, BEDROCK };
+    public enum BlockType { GRASS, DIRT, STONE, TNT, AIR, IRON, COAL, DIAMOND, BEDROCK, WOOD, LEAVES };
     Material material;
     BlockType bType;
     Chunk owner;
@@ -21,6 +21,9 @@ public class Block
     static Vector2 Coal_LBC = new(2f / 24, 31f / 34);
     static Vector2 Diamond_LBC = new(2f / 24, 30f / 34);
     static Vector2 Bedrock_LBC = new(1f / 24, 32f / 34);
+    static Vector2 WoodSide_LBC = new(4f / 24, 32f / 34);
+    static Vector2 WoodTopBottom_LBC = new(5f / 24, 32f / 34);
+    static Vector2 Leaves_LBC = new(5f / 24, 30f / 34);
 
     Vector2[,] blockUVs = {
                                 //Grass Top
@@ -74,9 +77,28 @@ public class Block
                                     Bedrock_LBC + new Vector2(1f / 24, 0f / 34),
                                     Bedrock_LBC + new Vector2(0f / 24, 1f / 34),
                                     Bedrock_LBC + new Vector2(1f / 24, 1f / 34)
+                                },
+                                //Árvore PAU
+                                {
+                                    WoodSide_LBC,
+                                    WoodSide_LBC + new Vector2(1f / 24, 0f / 34),
+                                    WoodSide_LBC + new Vector2(0f / 24, 1f / 34),
+                                    WoodSide_LBC + new Vector2(1f / 24, 1f / 34)
+                                },
+                                //Wood Top/Bottom
+                                {
+                                    WoodTopBottom_LBC,
+                                    WoodTopBottom_LBC + new Vector2(1f / 24, 0f / 34),
+                                    WoodTopBottom_LBC + new Vector2(0f / 24, 1f / 34),
+                                    WoodTopBottom_LBC + new Vector2(1f / 24, 1f / 34)
+                                },
+                                //Wood Side
+                                {
+                                    Leaves_LBC,
+                                    Leaves_LBC + new Vector2(1f / 24, 0f / 34),
+                                    Leaves_LBC + new Vector2(0f / 24, 1f / 34),
+                                    Leaves_LBC + new Vector2(1f / 24, 1f / 34)
                                 }
-                                //Árvore
-
                             };
 
 
@@ -103,20 +125,20 @@ public class Block
         Mesh mesh = new Mesh();
 
         //vertices coods
-        Vector3 v0 = new Vector3(-0.5f, -0.5f, 0.5f);
-        Vector3 v1 = new Vector3(0.5f, -0.5f, 0.5f);
-        Vector3 v2 = new Vector3(0.5f, -0.5f, -0.5f);
-        Vector3 v3 = new Vector3(-0.5f, -0.5f, -0.5f);
-        Vector3 v4 = new Vector3(-0.5f, 0.5f, 0.5f);
-        Vector3 v5 = new Vector3(0.5f, 0.5f, 0.5f);
-        Vector3 v6 = new Vector3(0.5f, 0.5f, -0.5f);
-        Vector3 v7 = new Vector3(-0.5f, 0.5f, -0.5f);
+        Vector3 v0 = new(-0.5f, -0.5f, 0.5f);
+        Vector3 v1 = new(0.5f, -0.5f, 0.5f);
+        Vector3 v2 = new(0.5f, -0.5f, -0.5f);
+        Vector3 v3 = new(-0.5f, -0.5f, -0.5f);
+        Vector3 v4 = new(-0.5f, 0.5f, 0.5f);
+        Vector3 v5 = new(0.5f, 0.5f, 0.5f);
+        Vector3 v6 = new(0.5f, 0.5f, -0.5f);
+        Vector3 v7 = new(-0.5f, 0.5f, -0.5f);
 
         //UV coords
-        Vector2 uv00 = new Vector2(0, 0);
-        Vector2 uv01 = new Vector2(0, 1);
-        Vector2 uv10 = new Vector2(1, 0);
-        Vector2 uv11 = new Vector2(1, 1);
+        Vector2 uv00 = new(0, 0);
+        Vector2 uv01 = new(0, 1);
+        Vector2 uv10 = new(1, 0);
+        Vector2 uv11 = new(1, 1);
 
         if (bType == BlockType.GRASS && side == Cubeside.TOP)
         {
@@ -173,6 +195,27 @@ public class Block
             uv10 = blockUVs[7, 1];
             uv01 = blockUVs[7, 2];
             uv11 = blockUVs[7, 3];
+        }
+        else if (bType == BlockType.WOOD && (side == Cubeside.TOP || side == Cubeside.BOTTOM))
+        {
+            uv00 = blockUVs[9, 0];
+            uv10 = blockUVs[9, 1];
+            uv01 = blockUVs[9, 2];
+            uv11 = blockUVs[9, 3];
+        }
+        else if (bType == BlockType.WOOD)
+        {
+            uv00 = blockUVs[8, 0];
+            uv10 = blockUVs[8, 1];
+            uv01 = blockUVs[8, 2];
+            uv11 = blockUVs[8, 3];
+        }
+        else if (bType == BlockType.LEAVES)
+        {
+            uv00 = blockUVs[10, 0];
+            uv10 = blockUVs[10, 1];
+            uv01 = blockUVs[10, 2];
+            uv11 = blockUVs[10, 3];
         }
         else
         {
@@ -287,12 +330,11 @@ public class Block
         }
         else
             chunkdata = owner.chunkdata;
-
         try
         {
             return chunkdata[x, y, z].isSolid;
         }
-        catch (System.IndexOutOfRangeException ex) { }
+        catch (System.IndexOutOfRangeException) { }
 
         return false;
     }

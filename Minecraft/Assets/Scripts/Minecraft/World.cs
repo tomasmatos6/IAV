@@ -42,7 +42,7 @@ public class World : MonoBehaviour
             c.setStatus(Chunk.ChunkStatus.INVIS);
             toInvis.TryAdd(name, c);
         }
-        else if (c.status != Chunk.ChunkStatus.DONE)
+        else if (c.status != Chunk.ChunkStatus.DONE || c.status == Chunk.ChunkStatus.INIT)
         { 
             c.setStatus(Chunk.ChunkStatus.DRAW);
             toInvis.TryRemove(name, out _);
@@ -201,10 +201,6 @@ public class World : MonoBehaviour
             lastBuildPos = player.transform.position;
             Building(WhichChunk(lastBuildPos), drawRadius);
             Drawing();
-            foreach (KeyValuePair<string, Chunk> kv in toInvis)
-            {
-                Debug.Log(kv.Key);
-            }
         }
         if (!drawing) Drawing(); 
     }
