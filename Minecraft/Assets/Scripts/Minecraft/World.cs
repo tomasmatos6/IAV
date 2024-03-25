@@ -10,14 +10,17 @@ public class World : MonoBehaviour
     public Material material;
     public static int colHeight = 4;
     public static int chunkSize = 16;
-    public static int drawRadius = 1;
+    public static int drawRadius = 2;
     public static int buildRadius = 4;
+    public static int heightRadius = 2;
     public static ConcurrentDictionary<string, Chunk> chunkDict;
     //public static List<string> toRemove = new();
-    public static List<string> toRemove = new();
-    public static List<string> toInvis = new();
+    public static ConcurrentDictionary<string, Chunk> toRemove = new();
+    public static ConcurrentDictionary<string, Chunk> toInvis = new();
     bool drawing;
     Vector3 lastBuildPos;
+    static float xOffset;
+    static float zOffset;
 
     public static string CreateChunkName(Vector3 pos)
     {
@@ -27,12 +30,22 @@ public class World : MonoBehaviour
     void BuildChunkAt(Vector3 chunkPos)
     {
         string name = CreateChunkName(chunkPos);
-        if (!chunkDict.TryGetValue(name, out _))
+        if (!chunkDict.TryGetValue(name, out Chunk c))
         {
-            Chunk c = new(chunkPos, material);
-            c.setStatus(Chunk.ChunkStatus.DRAW);
+            c = new(chunkPos, material, false, xOffset, zOffset);
             c.goChunk.transform.parent = this.transform;
             chunkDict.TryAdd(c.goChunk.name, c);
+        }
+
+        if (Vector3.Distance(player.transform.position, c.goChunk.transform.position) > drawRadius * chunkSize)
+        {
+            c.setStatus(Chunk.ChunkStatus.INVIS);
+            toInvis.TryAdd(name, c);
+        }
+        else if (c.status != Chunk.ChunkStatus.DONE)
+        { 
+            c.setStatus(Chunk.ChunkStatus.DRAW);
+            toInvis.TryRemove(name, out _);
         }
     }
 
@@ -45,7 +58,12 @@ public class World : MonoBehaviour
         BuildChunkAt(chunkPos);
         yield return null;
 
+
         if (--rad < 0) yield break; ;
+        if (rad == drawRadius-1)
+        {
+            Building(new(x, y - chunkSize, z), rad);
+        }
         Building(new(x + chunkSize, y, z), rad);
         Building(new(x + chunkSize, y, z + chunkSize), rad);
         Building(new(x + chunkSize, y, z - chunkSize), rad);
@@ -53,9 +71,10 @@ public class World : MonoBehaviour
         Building(new(x - chunkSize, y, z + chunkSize), rad);
         Building(new(x - chunkSize, y, z - chunkSize), rad);
         Building(new(x, y + chunkSize, z), rad);
-        Building(new(x, y - chunkSize, z), rad);
         Building(new(x, y, z + chunkSize), rad);
         Building(new(x, y, z - chunkSize), rad);
+        
+        
     }
 
     void Removing()
@@ -65,16 +84,20 @@ public class World : MonoBehaviour
     }
 
     IEnumerator InvisChunks() {
-        foreach (string n in toInvis)
+
+
+        foreach (KeyValuePair<string, Chunk> n in toInvis)
         {
-            if (chunkDict.TryGetValue(n, out Chunk c))
+            if (chunkDict.TryGetValue(n.Key, out Chunk c))
             {
                 float distToPlayer = Vector3.Distance(player.transform.position, c.goChunk.transform.position);
-                if (distToPlayer > chunkSize * buildRadius)
+                float distToPlayerY = Mathf.Abs(player.transform.position.y - c.goChunk.transform.position.y);
+                if (distToPlayer > chunkSize * buildRadius || distToPlayerY > chunkSize)
                 {
-                    c.goChunk.GetComponent<MeshRenderer>().enabled = false;
-                    chunkDict.TryRemove(n, out _);
-                    toInvis.Remove(n);
+                    try
+                    {
+                        c.goChunk.GetComponent<MeshRenderer>().enabled = false;
+                    } catch { }
                     yield return null;
                 }
             }
@@ -84,19 +107,20 @@ public class World : MonoBehaviour
 
     IEnumerator RemoveChunks()
     {
-        foreach (string n in toRemove)
+        foreach (KeyValuePair<string, Chunk> n in toRemove)
         {
-            if (chunkDict.TryGetValue(n, out Chunk c))
+            if (chunkDict.TryGetValue(n.Key, out Chunk c))
             {
                 float distToPlayer = Vector3.Distance(player.transform.position, c.goChunk.transform.position);
-                if (distToPlayer > chunkSize * drawRadius)
+                float distToPlayerY = Mathf.Abs(player.transform.position.y - c.goChunk.transform.position.y);
+                if (distToPlayer > chunkSize * drawRadius && distToPlayerY > chunkSize * heightRadius)
                 {
                     Destroy(c.goChunk);
-                    chunkDict.TryRemove(n, out _);
-                    toRemove.Remove(n);
+                    chunkDict.TryRemove(n.Key, out _);
+                    toRemove.TryRemove(n.Key, out _);
                     try
                     {
-                        toInvis.Remove(n);
+                        toInvis.TryRemove(n.Key, out _);
                     }
                     catch (Exception) { }
                     yield return null;
@@ -116,10 +140,15 @@ public class World : MonoBehaviour
                 c.Value.DrawChunk();
                 yield return null;
             }
+            
             if (Vector3.Distance(player.transform.position, c.Value.goChunk.transform.position) > chunkSize * buildRadius)
-                toInvis.Add(c.Key);
+            {
+                toRemove.TryAdd(c.Key, c.Value);
+            }
             else if (Vector3.Distance(player.transform.position, c.Value.goChunk.transform.position) > chunkSize * drawRadius)
-                toRemove.Add(c.Key);
+            {
+                toInvis.TryAdd(c.Key, c.Value);
+            }
         }
         Removing();
         drawing = false;
@@ -152,11 +181,14 @@ public class World : MonoBehaviour
         player.SetActive(false);
         chunkDict = new();
         transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
+        xOffset = UnityEngine.Random.value * 50000;
+        zOffset = UnityEngine.Random.value * 50000;
+        Debug.Log("xOffset: " + xOffset + ", zOffset: " + zOffset);
 
         Vector3 ppos = player.transform.position;
-        player.transform.position = new(ppos.x, Utils.GenerateHeight(ppos.x, ppos.z) + 1, ppos.z);
+        player.transform.position = new(ppos.x, Utils.GenerateHeight(ppos.x, ppos.z, xOffset, zOffset) + 1, ppos.z);
         lastBuildPos = WhichChunk(player.transform.position);
-        Building(WhichChunk(lastBuildPos), buildRadius);
+        Building(WhichChunk(lastBuildPos), drawRadius);
         Drawing();
         player.SetActive(true);
     }
@@ -167,9 +199,13 @@ public class World : MonoBehaviour
         if (movement.magnitude > chunkSize)
         {
             lastBuildPos = player.transform.position;
-            Building(WhichChunk(lastBuildPos), buildRadius);
+            Building(WhichChunk(lastBuildPos), drawRadius);
             Drawing();
+            foreach (KeyValuePair<string, Chunk> kv in toInvis)
+            {
+                Debug.Log(kv.Key);
+            }
         }
-        if (!drawing) Drawing();
+        if (!drawing) Drawing(); 
     }
 }

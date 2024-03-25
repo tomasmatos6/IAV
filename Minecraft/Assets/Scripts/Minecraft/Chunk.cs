@@ -9,13 +9,16 @@ public class Chunk
     public enum ChunkStatus { DRAW, DONE, INVIS };
     public ChunkStatus status;
     Material material;
-    
+    float xOffset;
+    float zOffset;
 
-    public Chunk(Vector3 pos, Material material, bool isMine)
+    public Chunk(Vector3 pos, Material material, bool isMine, float xOffset, float zOffset)
     {
         goChunk = new(World.CreateChunkName(pos));
         goChunk.transform.position = pos;
         this.material = material;
+        this.xOffset = xOffset;
+        this.zOffset = zOffset;
         BuildChunk();
     }
 
@@ -45,10 +48,10 @@ public class Chunk
                     int worldZ = (int)goChunk.transform.position.z + z;
 
                     //Altura gerada (numeros entre 0 e 40)
-                    int h = Utils.GenerateHeight(worldX, worldZ);
-                    int hs = Utils.GenerateStoneHeight(worldX, worldZ);
-                    int hd = Utils.GenerateDiaHeight(worldX, worldZ);
-                    int hbd = Utils.GenerateBRHeight(worldX, worldZ);
+                    int h = Utils.GenerateHeight(worldX, worldZ, xOffset, zOffset);
+                    int hs = Utils.GenerateStoneHeight(worldX, worldZ, xOffset, zOffset);
+                    int hd = Utils.GenerateDiaHeight(worldX, worldZ, xOffset, zOffset);
+                    int hbd = Utils.GenerateBRHeight(worldX, worldZ, xOffset, zOffset);
 
                     if (worldY == hbd)
                     {
@@ -58,7 +61,7 @@ public class Chunk
                     //Camada FERRO + PEDRA
                     else if (worldY <= hs && worldY > hd)
                     {
-                        if (Utils.fBM3D(worldX, worldY, worldZ, 7, 5.5f) > 0.495f)
+                        if (Utils.fBM3D(worldX, worldY, worldZ, 7, 5.5f, xOffset, zOffset) > 0.495f)
                         {
                             chunkdata[x, y, z] = new Block(Block.BlockType.AIR, pos, this, material);
                         }
@@ -81,7 +84,7 @@ public class Chunk
                     else if (worldY <= hd)
                     {
 
-                        if (Utils.fBM3D(worldX, worldY, worldZ, 7, 5.5f) > 0.495f)
+                        if (Utils.fBM3D(worldX, worldY, worldZ, 7, 5.5f, xOffset, zOffset) > 0.495f)
                         {
                             chunkdata[x, y, z] = new Block(Block.BlockType.AIR, pos, this, material);
                         }
@@ -104,7 +107,7 @@ public class Chunk
                     //Camada PEDRA
                     else if (worldY <= hs)
                     {
-                        if (Utils.fBM3D(worldX, worldY, worldZ, 2, 0.5f) > 0.495f)
+                        if (Utils.fBM3D(worldX, worldY, worldZ, 2, 0.5f, xOffset, zOffset) > 0.495f)
                         {
                             chunkdata[x, y, z] = new Block(Block.BlockType.AIR, pos, this, material);
                         }
@@ -132,7 +135,6 @@ public class Chunk
                 }
             }
         }
-        status = ChunkStatus.DRAW;
     }
 
     public void DrawChunk()
@@ -147,6 +149,7 @@ public class Chunk
         //Adicionar collider 
         MeshCollider collider = goChunk.AddComponent<MeshCollider>();
         collider.sharedMesh = goChunk.GetComponent<MeshFilter>().mesh;
+
         status = ChunkStatus.DONE;
     }
 

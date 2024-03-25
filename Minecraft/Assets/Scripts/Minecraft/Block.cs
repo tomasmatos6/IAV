@@ -13,92 +13,69 @@ public class Block
     bool isSolid;
 
     //Left bottom corner
-    static Vector2 GrassSide_LBC = new Vector2(3f, 15f) / 16;
-    static Vector2 GrassTop_LBC = new Vector2(2f, 6f) / 16;
-    static Vector2 Dirt_LBC = new Vector2(2f, 15f) / 16;
-    static Vector2 Stone_LBC = new Vector2(1f, 15f) / 16;
-    static Vector2 Iron_LBC = new Vector2(1f, 13f) / 16;
-    static Vector2 Coal_LBC = new Vector2(2f, 13f) / 16;
-    static Vector2 Diamond_LBC = new Vector2(2f, 12f) / 16;
-    static Vector2 Bedrock_LBC = new Vector2(1f, 14f) / 16;
-
-    static Vector2 TNTSide_LBC = new Vector2(8f, 15f) / 16;
-    static Vector2 TNTTop_LBC = new Vector2(9f, 15f) / 16;
-    static Vector2 TNTBottom_LBC = new Vector2(10f, 15f) / 16;
-
+    static Vector2 GrassSide_LBC = new(3f / 24, 33f / 34);
+    static Vector2 GrassTop_LBC = new(0f / 24, 33f / 34);
+    static Vector2 Dirt_LBC = new(2f / 24, 33f / 34);
+    static Vector2 Stone_LBC = new(1f / 24, 33f / 34);
+    static Vector2 Iron_LBC = new(1f / 24, 31f / 34);
+    static Vector2 Coal_LBC = new(2f / 24, 31f / 34);
+    static Vector2 Diamond_LBC = new(2f / 24, 30f / 34);
+    static Vector2 Bedrock_LBC = new(1f / 24, 32f / 34);
 
     Vector2[,] blockUVs = {
                                 //Grass Top
                                 {   GrassTop_LBC,
-                                    GrassTop_LBC + new Vector2(1f, 0f)/16,
-                                    GrassTop_LBC + new Vector2(0f, 1f)/16,
-                                    GrassTop_LBC + new Vector2(1f, 1f)/16
+                                    GrassTop_LBC + new Vector2(1f / 24, 0f / 34),
+                                    GrassTop_LBC + new Vector2(0f / 24, 1f / 34),
+                                    GrassTop_LBC + new Vector2(1f / 24, 1f / 34)
                                 },
                                 //Grass Side
                                 {   GrassSide_LBC,
-                                    GrassSide_LBC + new Vector2(1f, 0f)/16,
-                                    GrassSide_LBC + new Vector2(0f, 1f)/16,
-                                    GrassSide_LBC + new Vector2(1f, 1f)/16
+                                    GrassSide_LBC + new Vector2(1f / 24, 0f / 34),
+                                    GrassSide_LBC + new Vector2(0f / 24, 1f / 34),
+                                    GrassSide_LBC + new Vector2(1f / 24, 1f / 34)
                                 },
                                 //Dirt
                                 {   Dirt_LBC,
-                                    Dirt_LBC + new Vector2(1f, 0f)/16,
-                                    Dirt_LBC + new Vector2(0f, 1f)/16,
-                                    Dirt_LBC + new Vector2(1f, 1f)/16
+                                    Dirt_LBC + new Vector2(1f / 24, 0f / 34),
+                                    Dirt_LBC + new Vector2(0f / 24, 1f / 34),
+                                    Dirt_LBC + new Vector2(1f / 24, 1f / 34)
                                 },
                                 //Stone
                                 {   Stone_LBC,
-                                    Stone_LBC + new Vector2(1f, 0f)/16,
-                                    Stone_LBC + new Vector2(0f, 1f)/16,
-                                    Stone_LBC + new Vector2(1f, 1f)/16
-                                },
-                                //TNT Top
-                                {   TNTTop_LBC,
-                                    TNTTop_LBC + new Vector2(1f, 0f)/16,
-                                    TNTTop_LBC + new Vector2(0f, 1f)/16,
-                                    TNTTop_LBC + new Vector2(1f, 1f)/16
-                                },
-                                //TNT Bottom
-                                {   TNTBottom_LBC,
-                                    TNTBottom_LBC + new Vector2(1f, 0f)/16,
-                                    TNTBottom_LBC + new Vector2(0f, 1f)/16,
-                                    TNTBottom_LBC + new Vector2(1f, 1f)/16
-                                },
-                                //TNT Side
-                                {   TNTSide_LBC,
-                                    TNTSide_LBC + new Vector2(1f, 0f)/16,
-                                    TNTSide_LBC + new Vector2(0f, 1f)/16,
-                                    TNTSide_LBC + new Vector2(1f, 1f)/16
+                                    Stone_LBC + new Vector2(1f / 24, 0f / 34),
+                                    Stone_LBC + new Vector2(0f / 24, 1f / 34),
+                                    Stone_LBC + new Vector2(1f / 24, 1f / 34)
                                 },
                                 //Carvao
                                 {
                                     Coal_LBC,
-                                    Coal_LBC + new Vector2(1f, 0f)/16,
-                                    Coal_LBC + new Vector2(0f, 1f)/16,
-                                    Coal_LBC + new Vector2(1f, 1f)/16
+                                    Coal_LBC + new Vector2(1f / 24, 0f / 34),
+                                    Coal_LBC + new Vector2(0f / 24, 1f / 34),
+                                    Coal_LBC + new Vector2(1f / 24, 1f / 34)
                                 },
                                 //Ferro
                                 {
                                     Iron_LBC,
-                                    Iron_LBC + new Vector2(1f, 0f)/16,
-                                    Iron_LBC + new Vector2(0f, 1f)/16,
-                                    Iron_LBC + new Vector2(1f, 1f)/16
+                                    Iron_LBC + new Vector2(1f / 24, 0f / 34),
+                                    Iron_LBC + new Vector2(0f / 24, 1f / 34),
+                                    Iron_LBC + new Vector2(1f / 24, 1f / 34)
                                 },
                                 //Diamante
                                 {
                                     Diamond_LBC,
-                                    Diamond_LBC + new Vector2(1f, 0f)/16,
-                                    Diamond_LBC + new Vector2(0f, 1f)/16,
-                                    Diamond_LBC + new Vector2(1f, 1f)/16
+                                    Diamond_LBC + new Vector2(1f / 24, 0f / 34),
+                                    Diamond_LBC + new Vector2(0f / 24, 1f / 34),
+                                    Diamond_LBC + new Vector2(1f / 24, 1f / 34)
                                 },
                                 //Bedrock
                                 {
                                     Bedrock_LBC,
-                                    Bedrock_LBC + new Vector2(1f, 0f)/16,
-                                    Bedrock_LBC + new Vector2(0f, 1f)/16,
-                                    Bedrock_LBC + new Vector2(1f, 1f)/16
+                                    Bedrock_LBC + new Vector2(1f / 24, 0f / 34),
+                                    Bedrock_LBC + new Vector2(0f / 24, 1f / 34),
+                                    Bedrock_LBC + new Vector2(1f / 24, 1f / 34)
                                 }
-                                //Água
+                                //Árvore
 
                             };
 
@@ -148,65 +125,54 @@ public class Block
             uv01 = blockUVs[0, 2];
             uv11 = blockUVs[0, 3];
         }
-
-        else if (bType == BlockType.GRASS && side == Cubeside.BOTTOM)
+        else if (bType == BlockType.GRASS && side == Cubeside.BOTTOM || bType == BlockType.DIRT)
         {
             uv00 = blockUVs[2, 0];
             uv10 = blockUVs[2, 1];
             uv01 = blockUVs[2, 2];
             uv11 = blockUVs[2, 3];
         }
-
-        else if (bType == BlockType.TNT && side == Cubeside.TOP)
+        else if (bType == BlockType.GRASS)
+        {
+            uv00 = blockUVs[1, 0];
+            uv10 = blockUVs[1, 1];
+            uv01 = blockUVs[1, 2];
+            uv11 = blockUVs[1, 3];
+        }
+        else if (bType == BlockType.STONE)
+        {
+            uv00 = blockUVs[3, 0];
+            uv10 = blockUVs[3, 1];
+            uv01 = blockUVs[3, 2];
+            uv11 = blockUVs[3, 3];
+        }
+        else if (bType == BlockType.COAL)
         {
             uv00 = blockUVs[4, 0];
             uv10 = blockUVs[4, 1];
             uv01 = blockUVs[4, 2];
             uv11 = blockUVs[4, 3];
         }
-
-        else if (bType == BlockType.TNT && side == Cubeside.BOTTOM)
+        else if (bType == BlockType.IRON)
         {
             uv00 = blockUVs[5, 0];
             uv10 = blockUVs[5, 1];
             uv01 = blockUVs[5, 2];
             uv11 = blockUVs[5, 3];
         }
-
-        else if (bType == BlockType.TNT)
+        else if (bType == BlockType.DIAMOND)
         {
             uv00 = blockUVs[6, 0];
             uv10 = blockUVs[6, 1];
             uv01 = blockUVs[6, 2];
             uv11 = blockUVs[6, 3];
         }
-        else if (bType == BlockType.COAL)
+        else if (bType == BlockType.BEDROCK)
         {
             uv00 = blockUVs[7, 0];
             uv10 = blockUVs[7, 1];
             uv01 = blockUVs[7, 2];
             uv11 = blockUVs[7, 3];
-        }
-        else if (bType == BlockType.IRON)
-        {
-            uv00 = blockUVs[8, 0];
-            uv10 = blockUVs[8, 1];
-            uv01 = blockUVs[8, 2];
-            uv11 = blockUVs[8, 3];
-        }
-        else if (bType == BlockType.DIAMOND)
-        {
-            uv00 = blockUVs[9, 0];
-            uv10 = blockUVs[9, 1];
-            uv01 = blockUVs[9, 2];
-            uv11 = blockUVs[9, 3];
-        }
-        else if (bType == BlockType.BEDROCK)
-        {
-            uv00 = blockUVs[10, 0];
-            uv10 = blockUVs[10, 1];
-            uv01 = blockUVs[10, 2];
-            uv11 = blockUVs[10, 3];
         }
         else
         {

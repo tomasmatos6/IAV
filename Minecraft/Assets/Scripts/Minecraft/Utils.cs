@@ -10,7 +10,7 @@ public class Utils
     static float smooth3D = 10f * smooth;
 
     //seed
-    static float offset = 32000;
+    static float offset = 54000;
     //Maximo de altura do terreno
     //static int maxHeight = 255;
     //Acima de 40 tudo é AIR
@@ -20,27 +20,27 @@ public class Utils
     static float persistence = 0.7f;
 
     //Gerar altitude a partir de latitude e longitude de AR
-    public static int GenerateHeight(float x, float z)
+    public static int GenerateHeight(float x, float z, float xOffset, float zOffset)
     {
-        return (int)Map(0, maxHeight, 0, 1, fBM(x * smooth, z * smooth, octaves, persistence));
+        return (int)Map(0, maxHeight, 0, 1, fBM(x * smooth, z * smooth, octaves, persistence, xOffset, zOffset));
     }
 
     //Gerar altitude para Pedra
-    public static int GenerateStoneHeight(float x, float z)
+    public static int GenerateStoneHeight(float x, float z, float xOffset, float zOffset)
     {
-        return (int)Map(0, maxHeight - 10, 0, 1, fBM(x * 3 * smooth, z * 3 * smooth, octaves - 1, 1.2f * persistence));
+        return (int)Map(0, maxHeight - 10, 0, 1, fBM(x * smooth, z * smooth, octaves - 1, 1.2f * persistence, xOffset, zOffset));
     }
 
     //Gerar altitude para Diamante
-    public static int GenerateDiaHeight(float x, float z)
+    public static int GenerateDiaHeight(float x, float z, float xOffset, float zOffset)
     {
-        return (int)Map(0, maxHeight * 0.2f, 0, 1, fBM(x * smoothTeste, z * smoothTeste, octaves - 1, persistence));
+        return (int)Map(0, maxHeight * 0.2f, 0, 1, fBM(x * smoothTeste, z * smoothTeste, octaves - 1, persistence, xOffset, zOffset));
     }
 
     //Gerar altitude para Bedrock
-    public static int GenerateBRHeight(float x, float z)
+    public static int GenerateBRHeight(float x, float z, float xOffset, float zOffset)
     {
-        return (int)Map(0, maxHeight - (maxHeight - 1), 0, 1, fBM(x * smooth, z * smooth, octaves, persistence));
+        return (int)Map(0, maxHeight - (maxHeight - 1), 0, 1, fBM(x * smooth, z * smooth, octaves, persistence, xOffset, zOffset));
     }
 
     //Converte intervalos de valores 
@@ -50,14 +50,14 @@ public class Utils
     }
 
     //Fractal bronian motion 3D
-    public static float fBM3D(float x, float y, float z, int octaves, float persistence)
+    public static float fBM3D(float x, float y, float z, int octaves, float persistence, float xOffset, float zOffset)
     {
-        float xy = fBM(x * smooth3D, y * smooth3D, octaves, persistence);
-        float yx = fBM(y * smooth3D, x * smooth3D, octaves, persistence);
-        float xz = fBM(x * smooth3D, z * smooth3D, octaves, persistence);
-        float zx = fBM(z * smooth3D, x * smooth3D, octaves, persistence);
-        float yz = fBM(y * smooth3D, z * smooth3D, octaves, persistence);
-        float zy = fBM(z * smooth3D, y * smooth3D, octaves, persistence);
+        float xy = fBM(x * smooth3D, y * smooth3D, octaves, persistence, xOffset, zOffset);
+        float yx = fBM(y * smooth3D, x * smooth3D, octaves, persistence, xOffset, zOffset);
+        float xz = fBM(x * smooth3D, z * smooth3D, octaves, persistence, xOffset, zOffset);
+        float zx = fBM(z * smooth3D, x * smooth3D, octaves, persistence, xOffset, zOffset);
+        float yz = fBM(y * smooth3D, z * smooth3D, octaves, persistence, xOffset, zOffset);
+        float zy = fBM(z * smooth3D, y * smooth3D, octaves, persistence, xOffset, zOffset);
 
         //float val = (xy + yx + xz + zx + yz + zy) / 6;
         //return (val - 0.5f) * 2;
@@ -70,12 +70,16 @@ public class Utils
     // Turning angle 45?
     // weightTarget
 
-    static float fBM(float x, float z, int octaves, float persistence)
+    static float fBM(float x, float z, int octaves, float persistence, float xOffset, float zOffset)
     {
         float total = 0;
         float amplitude = 1;
         float frequency = 1;
         float maxValue = 0;
+
+        
+
+        
 
         for (int i = 0; i < octaves; i++)
         {
