@@ -290,7 +290,7 @@ public class Block
         //mr.material = material;
     }
 
-    int ConvertToLocalIndex(int i)
+    public static int ConvertToLocalIndex(int i)
     {
         //como chunks sao de 0 a 15
         //caso esteja no indice -1, converte para 15 
