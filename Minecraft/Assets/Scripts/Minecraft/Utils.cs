@@ -19,6 +19,19 @@ public class Utils
     static int octaves = 6;
     static float persistence = 0.7f;
 
+    // Variaveis para a temperatura
+    static float smoothT = 0.005f;
+    static int minHeightT = -30;
+    static int maxHeightT = 30;
+    static int octavesT = 6;
+    static float persistenceT = 0.7f;
+
+    // Variaveis para a humidade
+    static float smoothH = 0.001f;
+    static int maxHeightH = 100;
+    static int octavesH = 3;
+    static float persistenceH = 0.7f;
+
     //Gerar altitude a partir de latitude e longitude de AR
     public static int GenerateHeight(float x, float z, float xOffset, float zOffset)
     {
@@ -41,6 +54,19 @@ public class Utils
     public static int GenerateBRHeight(float x, float z, float xOffset, float zOffset)
     {
         return (int)Map(0, maxHeight - (maxHeight - 1), 0, 1, fBM(x * smooth, z * smooth, octaves, persistence, xOffset, zOffset));
+    }
+
+    //Gerar temperaturas
+    public static int GenerateTemperature(float x, float z, float xOffset, float zOffset)
+    {
+        return (int)Map(0, 60, 0, 1, fBM(x * smoothT, z * smoothT, octavesT, persistenceT, xOffset, zOffset));
+    }
+
+    //Gerar humidades
+
+    public static int GenerateHumidity(float x, float z, float xOffset, float zOffset)
+    {
+        return (int)Map(0, maxHeightH, 0, 1, fBM(x * smoothH, z * smoothH, octavesH, persistenceH, xOffset, zOffset));
     }
 
     //Converte intervalos de valores 

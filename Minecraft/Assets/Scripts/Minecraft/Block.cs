@@ -5,7 +5,7 @@ using UnityEngine;
 public class Block
 {
     enum Cubeside { BOTTOM, TOP, LEFT, RIGHT, FRONT, BACK };
-    public enum BlockType { GRASS, DIRT, STONE, TNT, AIR, IRON, COAL, DIAMOND, BEDROCK, WOOD, LEAVES };
+    public enum BlockType { GRASS, DIRT, STONE, TNT, AIR, IRON, COAL, DIAMOND, BEDROCK, WOOD, LEAVES, SNOW, SAND, MUD };
     Material material;
     BlockType bType;
     Chunk owner;
@@ -24,6 +24,11 @@ public class Block
     static Vector2 WoodSide_LBC = new(4f / 24, 32f / 34);
     static Vector2 WoodTopBottom_LBC = new(5f / 24, 32f / 34);
     static Vector2 Leaves_LBC = new(5f / 24, 30f / 34);
+    static Vector2 SnowTop_LBC = new(2f / 24, 29f / 34);
+    static Vector2 SnowSide_LBC = new(4f / 24, 29f / 34);
+    static Vector2 MudTop_LBC = new(15f / 24, 17f / 34);
+    static Vector2 MudSide_LBC = new(16f / 24, 17f / 34);
+    static Vector2 Sand_LBC = new(2f / 24, 32f / 34);
 
     Vector2[,] blockUVs = {
                                 //Grass Top
@@ -98,6 +103,41 @@ public class Block
                                     Leaves_LBC + new Vector2(1f / 24, 0f / 34),
                                     Leaves_LBC + new Vector2(0f / 24, 1f / 34),
                                     Leaves_LBC + new Vector2(1f / 24, 1f / 34)
+                                },
+                                //Snow Top
+                                {
+                                    SnowTop_LBC,
+                                    SnowTop_LBC + new Vector2(1f / 24, 0f / 34),
+                                    SnowTop_LBC + new Vector2(0f / 24, 1f / 34),
+                                    SnowTop_LBC + new Vector2(1f / 24, 1f / 34)
+                                },
+                                //Snow Side
+                                {
+                                    SnowSide_LBC,
+                                    SnowSide_LBC + new Vector2(1f / 24, 0f / 34),
+                                    SnowSide_LBC + new Vector2(0f / 24, 1f / 34),
+                                    SnowSide_LBC + new Vector2(1f / 24, 1f / 34)
+                                },
+                                //Mud Top
+                                {
+                                    MudTop_LBC,
+                                    MudTop_LBC + new Vector2(1f / 24, 0f / 34),
+                                    MudTop_LBC + new Vector2(0f / 24, 1f / 34),
+                                    MudTop_LBC + new Vector2(1f / 24, 1f / 34)
+                                },
+                                //Mud Side
+                                {
+                                    MudSide_LBC,
+                                    MudSide_LBC + new Vector2(1f / 24, 0f / 34),
+                                    MudSide_LBC + new Vector2(0f / 24, 1f / 34),
+                                    MudSide_LBC + new Vector2(1f / 24, 1f / 34)
+                                },
+                                //Sand
+                                {
+                                    Sand_LBC,
+                                    Sand_LBC + new Vector2(1f / 24, 0f / 34),
+                                    Sand_LBC + new Vector2(0f / 24, 1f / 34),
+                                    Sand_LBC + new Vector2(1f / 24, 1f / 34)
                                 }
                             };
 
@@ -147,7 +187,10 @@ public class Block
             uv01 = blockUVs[0, 2];
             uv11 = blockUVs[0, 3];
         }
-        else if (bType == BlockType.GRASS && side == Cubeside.BOTTOM || bType == BlockType.DIRT)
+        else if ((bType == BlockType.GRASS && side == Cubeside.BOTTOM) || 
+            bType == BlockType.DIRT || 
+            (bType == BlockType.SNOW && side == Cubeside.BOTTOM) || 
+            (bType == BlockType.MUD && side == Cubeside.BOTTOM))
         {
             uv00 = blockUVs[2, 0];
             uv10 = blockUVs[2, 1];
@@ -216,6 +259,41 @@ public class Block
             uv10 = blockUVs[10, 1];
             uv01 = blockUVs[10, 2];
             uv11 = blockUVs[10, 3];
+        }
+        else if (bType == BlockType.SNOW && side == Cubeside.TOP)
+        {
+            uv00 = blockUVs[11, 0];
+            uv10 = blockUVs[11, 1];
+            uv01 = blockUVs[11, 2];
+            uv11 = blockUVs[11, 3];
+        }
+        else if (bType == BlockType.SNOW)
+        {
+            uv00 = blockUVs[12, 0];
+            uv10 = blockUVs[12, 1];
+            uv01 = blockUVs[12, 2];
+            uv11 = blockUVs[12, 3];
+        }
+        else if (bType == BlockType.MUD && side == Cubeside.TOP)
+        {
+            uv00 = blockUVs[13, 0];
+            uv10 = blockUVs[13, 1];
+            uv01 = blockUVs[13, 2];
+            uv11 = blockUVs[13, 3];
+        }
+        else if (bType == BlockType.MUD)
+        {
+            uv00 = blockUVs[14, 0];
+            uv10 = blockUVs[14, 1];
+            uv01 = blockUVs[14, 2];
+            uv11 = blockUVs[14, 3];
+        }
+        else if (bType == BlockType.SAND)
+        {
+            uv00 = blockUVs[15, 0];
+            uv10 = blockUVs[15, 1];
+            uv01 = blockUVs[15, 2];
+            uv11 = blockUVs[15, 3];
         }
         else
         {

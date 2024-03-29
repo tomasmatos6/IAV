@@ -2,26 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
+using static UnityEngine.UI.GridLayoutGroup;
 
 public class Chunk
 {
     public Block[,,] chunkdata;
     public GameObject goChunk;
-    public enum ChunkStatus { INIT, DRAW, DONE, INVIS };
+    public enum ChunkStatus { INIT, DRAW, DONE};
     public ChunkStatus status;
     Material material;
-    float xOffset;
-    float zOffset;
+    public World world;
 
-    public Chunk(Vector3 pos, Material material, bool isMine, float xOffset, float zOffset)
+    public Chunk(Vector3 pos, Material material, bool isMine, World world)
     {
         goChunk = new(World.CreateChunkName(pos));
         goChunk.transform.position = pos;
         this.material = material;
-        this.xOffset = xOffset;
-        this.zOffset = zOffset;
+        this.world = world;
         status = ChunkStatus.INIT;
         BuildChunk();
+        //PlaceTrees();
     }
 
     public void setStatus(ChunkStatus status)
@@ -50,10 +50,15 @@ public class Chunk
                     int worldZ = (int)goChunk.transform.position.z + z;
 
                     //Altura gerada (numeros entre 0 e 40)
-                    int h = Utils.GenerateHeight(worldX, worldZ, xOffset, zOffset);
-                    int hs = Utils.GenerateStoneHeight(worldX, worldZ, xOffset, zOffset);
-                    int hd = Utils.GenerateDiaHeight(worldX, worldZ, xOffset, zOffset);
-                    int hbd = Utils.GenerateBRHeight(worldX, worldZ, xOffset, zOffset);
+                    int h = Utils.GenerateHeight(worldX, worldZ, World.xOffset, World.zOffset);
+                    int hs = Utils.GenerateStoneHeight(worldX, worldZ, World.xOffset, World.zOffset);
+                    int hd = Utils.GenerateDiaHeight(worldX, worldZ, World.xOffset, World.zOffset);
+                    int hbd = Utils.GenerateBRHeight(worldX, worldZ, World.xOffset, World.zOffset);
+
+                    int temperature = Utils.GenerateTemperature(worldX, worldZ, World.xOffset, World.zOffset);
+                    int humidity = Utils.GenerateHumidity(worldX, worldZ, World.xOffset, World.zOffset);
+
+                    Biome.BiomeType biome = Biome.GetBiome(temperature, humidity);
 
                     if (worldY == hbd)
                     {
@@ -63,7 +68,7 @@ public class Chunk
                     //Camada FERRO + PEDRA
                     else if (worldY <= hs && worldY > hd)
                     {
-                        if (Utils.fBM3D(worldX, worldY, worldZ, 7, 5.5f, xOffset, zOffset) > 0.495f)
+                        if (Utils.fBM3D(worldX, worldY, worldZ, 7, 5.5f, World.xOffset, World.zOffset) > 0.495f)
                         {
                             chunkdata[x, y, z] = new Block(Block.BlockType.AIR, pos, this, material);
                         }
@@ -86,7 +91,7 @@ public class Chunk
                     else if (worldY <= hd)
                     {
 
-                        if (Utils.fBM3D(worldX, worldY, worldZ, 7, 5.5f, xOffset, zOffset) > 0.495f)
+                        if (Utils.fBM3D(worldX, worldY, worldZ, 7, 5.5f, World.xOffset, World.zOffset) > 0.495f)
                         {
                             chunkdata[x, y, z] = new Block(Block.BlockType.AIR, pos, this, material);
                         }
@@ -109,7 +114,7 @@ public class Chunk
                     //Camada PEDRA
                     else if (worldY <= hs)
                     {
-                        if (Utils.fBM3D(worldX, worldY, worldZ, 2, 0.5f, xOffset, zOffset) > 0.495f)
+                        if (Utils.fBM3D(worldX, worldY, worldZ, 2, 0.5f, World.xOffset, World.zOffset) > 0.495f)
                         {
                             chunkdata[x, y, z] = new Block(Block.BlockType.AIR, pos, this, material);
                         }
@@ -122,11 +127,14 @@ public class Chunk
                     //Camada ERVA
                     else if (worldY == h)
                     {
-                        chunkdata[x, y, z] = new Block(Block.BlockType.GRASS, pos, this, material);
-                        if(Random.Range(0f, 5f) > 4.9f)
+                        chunkdata[x, y, z] = new Block(Biome.GetBiomeDirt(biome), pos, this, material);
+                        if (x > 1 && z > 1 && x < 14 && z < 14 && worldY >= 40)
                         {
-                            SpawnTree(pos, (int)Random.Range(7f, 10f));
-                            
+                            //if (Random.value * 5 > 4.95)
+                            //{
+                            //    Tree tree = new(pos + Vector3.up, this, material);
+                            //    tree.SpawnTree(Random.Range(3, 5));
+                            //}
                         }
                     }
                     //Camada TERRA
@@ -143,18 +151,7 @@ public class Chunk
                 }
             }
         }
-    }
-
-    public void SpawnTree(Vector3 pos, int altura)
-    {
-        Vector3 newPos = pos;
-        
-        if(++newPos.y < altura)
-        {
-            
-            chunkdata[(int)newPos.x, (int)newPos.y, (int)newPos.z] = new Block(Block.BlockType.WOOD, newPos, this, material);
-            SpawnTree(newPos, altura);
-        }
+        status = ChunkStatus.DRAW;
     }
 
     public void DrawChunk()
